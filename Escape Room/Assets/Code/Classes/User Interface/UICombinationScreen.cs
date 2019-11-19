@@ -7,10 +7,20 @@ using UnityEngine;
 
 class UICombinationScreen : MonoBehaviour
 {
-    [Tooltip ("The maximum length of the combination.")]
-    [SerializeField] private int _MaxCombinationLength = 0;
-
     private string _Combination = "";
+    private int _MaxCombinationLength = 0;
+    private ICodeLockable _LockedObject = null;
+
+    private void ResetCombination ()
+    {
+        _Combination = "";
+    }
+
+    public void DisplayKeypad (string correctCombination, ICodeLockable lockedObject)
+    {
+        _LockedObject = lockedObject;
+        _MaxCombinationLength = correctCombination.Length;
+    }
 
     public void PressKey (string symbol)
     {
@@ -22,6 +32,21 @@ class UICombinationScreen : MonoBehaviour
 
     public void EnterCombination ()
     {
-        //TODO: Enter combination check.
+        if (_LockedObject.Unlock (_Combination) == false)
+        {
+            ResetKeypad ();
+        }
+        else
+        {
+            this.gameObject.SetActive (false);
+            Signals.ChangeGameState (GameState.MainScreen);
+        }
+    }
+
+    private void ResetKeypad ()
+    {
+        _Combination = "";
+        //TODO: Display label to user that combination failed.
+        //TODO: Play sound that combination failed.
     }
 }

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-interface IClickable
+interface IRequirable
 {
-    void Clicked (GameManager manager);
+    Item RequiredItem { get; }
+
+    void Give (Item item);
 }

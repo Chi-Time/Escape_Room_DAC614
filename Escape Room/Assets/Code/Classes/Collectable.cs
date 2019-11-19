@@ -13,6 +13,7 @@ public class Collectable : MonoBehaviour
 
     private void Awake ()
     {
+        _Item.Constructor ();
         GetComponent<Collider2D> ().isTrigger = true;
     }
 

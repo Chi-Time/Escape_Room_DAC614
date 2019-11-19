@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum GameState
+public enum GameState
 {
     MainScreen,
     Container,

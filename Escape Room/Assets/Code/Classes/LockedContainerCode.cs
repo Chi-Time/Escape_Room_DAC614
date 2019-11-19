@@ -5,26 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class LockedCode : MonoBehaviour, ICodeLockable
+class LockedContainerCode : Container, ICodeLockable
 {
     public bool IsUnlocked { get; set; }
 
     [Tooltip ("The combination required to open")]
     [SerializeField] private string _RequiredCombination = null;
-    [Tooltip ("The view to display with the contents of the container.")]
-    [SerializeField] private GameObject _ContainerContents = null;
     [Tooltip ("The UI to display for entering the combination.")]
     [SerializeField] private UICombinationScreen _CombinationUI = null;
 
-    private void Awake ()
+    protected override void Awake ()
     {
-        IsUnlocked = true;
-        
-        if (_ContainerContents != null)
-        {
-            _ContainerContents = Instantiate (_ContainerContents, new Vector3 (0, 0, -1f), Quaternion.identity);
-            _ContainerContents.SetActive (false);
-        }
+        base.Awake ();
+
+        IsUnlocked = false;
 
         if (_CombinationUI != null)
         {
@@ -33,30 +27,23 @@ class LockedCode : MonoBehaviour, ICodeLockable
         }
     }
 
-    private void Start ()
+    protected override void Start ()
     {
-        if (_ContainerContents != null)
-        {
-            var containerHolder = GameObject.Find ("Containers Holder");
-            _ContainerContents.transform.SetParent (containerHolder.transform);
-        }
+        base.Start ();
 
         if (_CombinationUI != null)
         {
-            var canvasHolder = FindObjectOfType<Canvas> ().transform;
-            _ContainerContents.transform.SetParent (canvasHolder);
+            var canvasHolder = FindObjectOfType<Canvas> ().GetComponent<RectTransform> ();
+            var _UIRect = _CombinationUI.GetComponent<RectTransform> ();
+            _UIRect.SetParent (canvasHolder, false);
         }
     }
 
-    public void OnMouseDown ()
+    protected override void OnMouseDown ()
     {
         if (IsUnlocked)
         {
-            if (_ContainerContents != null)
-            {
-                _ContainerContents.SetActive (true);
-                Signals.ChangeGameState (GameState.Container);
-            }
+            Clicked ();
         }
         else
         {
@@ -68,6 +55,8 @@ class LockedCode : MonoBehaviour, ICodeLockable
         }
     }
 
+    /// <summary>Attempts to unlock the object and returns true or false whether it's successful.</summary>
+    /// <param name="inputCombination">The combination to attempt to unlock the object.</param>
     public bool Unlock (string inputCombination)
     {
         if (_RequiredCombination == inputCombination)

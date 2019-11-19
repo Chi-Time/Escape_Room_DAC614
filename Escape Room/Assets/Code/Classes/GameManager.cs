@@ -2,16 +2,22 @@
 
 public class GameManager : MonoBehaviour
 {
+    public Inventory Inventory { get { return _Inventory; } }
+    public GameState CurrentState { get { return _CurrentState; } }
+
     [Tooltip ("The current state that the game is currently in.")]
     [SerializeField] private GameState _CurrentState = GameState.MainScreen;
     [Tooltip ("The inventory that the player can currently access.")]
-    [SerializeField] private Inventory Inventory = new Inventory ();
+    [SerializeField] private Inventory _Inventory = new Inventory ();
 
+    private GameObject _Canvas = null;
     private GameObject _Containers = null;
 
     private void Awake ()
     {
         CreateContainerHolder ();
+        _Inventory.Constructor ();
+        _Canvas = GetComponentInChildren<Canvas> ().gameObject;
     }
 
     private void CreateContainerHolder ()
@@ -27,10 +33,9 @@ public class GameManager : MonoBehaviour
             case GameState.MainScreen:
                 break;
             case GameState.Container:
+            case GameState.Combination:
                 if (Input.GetMouseButtonDown (1))
                     Signals.ChangeGameState (GameState.MainScreen);
-                break;
-            case GameState.Combination:
                 break;
             case GameState.Paused:
                 break;
@@ -41,18 +46,37 @@ public class GameManager : MonoBehaviour
     {
         Signals.OnCollected += OnCollected;
         Signals.OnInspected += OnInspected;
+        Signals.OnItemRequired += OnItemRequired;
+        Signals.OnThingClicked += OnThingClicked;
         Signals.OnGameStateChanged += OnGameStateChanged;
     }
 
     private void OnCollected (Collectable collectable)
     {
         Item item = collectable.Collect ();
-        Inventory.AddInventoryItem (item);
+        _Inventory.AddItem (item);
     }
 
     private void OnInspected (Inspectable inspectable)
     {
         inspectable.Inspect ();
+    }
+
+    private void OnItemRequired (IRequirable requirer)
+    {
+        var item = Inventory.GetItem (requirer.RequiredItem);
+
+        requirer.Give (item);
+    }
+
+    private void OnThingClicked (IClickable thing)
+    {
+        var lockedThing = (IClickable)thing;
+
+        if (lockedThing != null)
+        {
+            lockedThing.Clicked (this);
+        }
     }
 
     private void OnGameStateChanged (GameState gameState)
@@ -62,8 +86,7 @@ public class GameManager : MonoBehaviour
         switch (_CurrentState)
         {
             case GameState.MainScreen:
-                foreach (Transform container in _Containers.transform)
-                    container.gameObject.SetActive (false);
+                DisplayMainScreen ();
                 break;
             case GameState.Container:
                 break;
@@ -73,10 +96,23 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    /// <summary>Loops through and de-activates all overlayed containers and screens.</summary>
+    private void DisplayMainScreen ()
+    {
+        foreach (Transform container in _Containers.transform)
+            container.gameObject.SetActive (false);
+
+        foreach (Transform uiWindow in _Canvas.transform)
+            uiWindow.gameObject.SetActive (false);
+    }
         
     private void OnDisable ()
     {
         Signals.OnCollected -= OnCollected;
         Signals.OnInspected -= OnInspected;
+        Signals.OnItemRequired -= OnItemRequired;
+        Signals.OnThingClicked -= OnThingClicked;
+        Signals.OnGameStateChanged -= OnGameStateChanged;
     }
 }

@@ -7,8 +7,6 @@ using UnityEngine;
 
 class Inspectable : MonoBehaviour
 {
-    //TODO: Make it so that a UI window is displayed upon clicking an object.
-
     public void Inspect ()
     {
 

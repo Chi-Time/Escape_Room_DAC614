@@ -45,9 +45,7 @@ public class GameManager : MonoBehaviour
     private void OnEnable ()
     {
         Signals.OnCollected += OnCollected;
-        Signals.OnInspected += OnInspected;
         Signals.OnItemRequired += OnItemRequired;
-        Signals.OnThingClicked += OnThingClicked;
         Signals.OnGameStateChanged += OnGameStateChanged;
     }
 
@@ -57,26 +55,11 @@ public class GameManager : MonoBehaviour
         _Inventory.AddItem (item);
     }
 
-    private void OnInspected (Inspectable inspectable)
-    {
-        inspectable.Inspect ();
-    }
-
     private void OnItemRequired (IRequirable requirer)
     {
         var item = Inventory.GetItem (requirer.RequiredItem);
 
         requirer.Give (item);
-    }
-
-    private void OnThingClicked (IClickable thing)
-    {
-        var lockedThing = (IClickable)thing;
-
-        if (lockedThing != null)
-        {
-            lockedThing.Clicked (this);
-        }
     }
 
     private void OnGameStateChanged (GameState gameState)
@@ -110,9 +93,7 @@ public class GameManager : MonoBehaviour
     private void OnDisable ()
     {
         Signals.OnCollected -= OnCollected;
-        Signals.OnInspected -= OnInspected;
         Signals.OnItemRequired -= OnItemRequired;
-        Signals.OnThingClicked -= OnThingClicked;
         Signals.OnGameStateChanged -= OnGameStateChanged;
     }
 }

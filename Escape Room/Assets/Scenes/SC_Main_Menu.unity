@@ -151,7 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6da14dcb22dbf0143b48e27f6def5ebf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ContainerContents: {fileID: 0}
+  _ContainerContents: {fileID: 206406176112492236, guid: e8faf56ef76178b40917e3e0e904f317,
+    type: 3}
   _IsLocked: 1
   _RequiredItem:
     _Name: Key
@@ -515,8 +516,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2aba122352db3745a3498ca8fb799a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ContainerContents: {fileID: 0}
-  _LockedMessage: {fileID: 0}
+  _ContainerContents: {fileID: 6650591212609884047, guid: b244d79faede76a498c46e7f54797b82,
+    type: 3}
+  _LockedMessage: {fileID: 4900000, guid: b351a8db15e67d2489d7674925047a16, type: 3}
   _UnlockedMessage: {fileID: 4900000, guid: 14ef43987a6d50f41bb4346c773e6d54, type: 3}
   _IsUnlocked: 0
 --- !u!212 &749636528

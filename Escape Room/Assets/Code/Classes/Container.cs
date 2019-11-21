@@ -5,13 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[RequireComponent (typeof (Collider2D), typeof (AudioSource))]
 public class Container : MonoBehaviour
 {
+    [Tooltip ("The clip to play when opening the object.")]
+    [SerializeField] protected AudioClip _OpenClip = null;
     [Tooltip ("The view to display with the contents of the container.")]
     [SerializeField] protected GameObject _ContainerContents = null;
 
+    protected AudioSource _AudioSource = null;
+    protected SpriteRenderer _SpriteRenderer = null;
+
     protected virtual void Awake ()
     {
+        _AudioSource = GetComponent<AudioSource> ();
+        _SpriteRenderer = GetComponent<SpriteRenderer> ();
+
         if (_ContainerContents != null)
         {
             _ContainerContents = Instantiate (_ContainerContents, new Vector3 (0, 0, -1f), Quaternion.identity);
@@ -37,6 +46,9 @@ public class Container : MonoBehaviour
     {
         if (_ContainerContents != null)
         {
+            if (_OpenClip != null)
+                _AudioSource.PlayOneShot (_OpenClip);
+
             _ContainerContents.SetActive (true);
             Signals.ChangeGameState (GameState.Container);
         }

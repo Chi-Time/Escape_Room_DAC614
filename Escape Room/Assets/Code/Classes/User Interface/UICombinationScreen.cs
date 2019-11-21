@@ -14,31 +14,48 @@ class UICombinationScreen : MonoBehaviour
     [SerializeField] private string _StartText = "Enter Code";
     [Tooltip ("The text to display when the user fails the combination.")]
     [SerializeField] private string _ErrorText = "Wrong Code";
+    [Tooltip ("The audio clip to play when the code is wrong.")]
+    [SerializeField] private AudioClip _ErrorClip = null;
+    [Tooltip ("The audio clip to play when the code is correct.")]
+    [SerializeField] private AudioClip _ButtonClip = null;
+    [Tooltip ("The audio clip to play when a button is pressed.")]
+    [SerializeField] private AudioClip _ConfirmationClip = null;
 
     private string _Combination = "";
     private int _MaxCombinationLength = 0;
     private ICodeLockable _LockedObject = null;
+    private AudioSource _AudioSource = null;
 
-    public void ClearCombination ()
+    public void ResetKeypad ()
     {
-        _Combination = "";
-        _CombinationLabel.text = "";
+        ClearCombination ();
+
+        if (_ErrorClip != null)
+            _AudioSource.PlayOneShot (_ErrorClip);
     }
 
     public void DisplayKeypad (string correctCombination, ICodeLockable lockedObject)
     {
+        this.gameObject.SetActive (true);
+
         ClearCombination ();
         _LockedObject = lockedObject;
         _CombinationLabel.text = "Enter Code";
         _MaxCombinationLength = correctCombination.Length;
-
-        this.gameObject.SetActive (true);
     }
 
     public void PressKey (string symbol)
     {
         UpdateCombination (ref symbol);
         UpdateLabel ();
+
+        if (_ButtonClip != null)
+            _AudioSource.PlayOneShot (_ButtonClip);
+    }
+
+    private void Awake ()
+    {
+        _AudioSource = GetComponent<AudioSource> ();
     }
 
     private void UpdateCombination (ref string symbol)
@@ -62,18 +79,27 @@ class UICombinationScreen : MonoBehaviour
         if (_LockedObject.Unlock (_Combination) == false)
         {
             ResetKeypad ();
+            _CombinationLabel.text = _ErrorText;
         }
         else
         {
-            this.gameObject.SetActive (false);
-            Signals.ChangeGameState (GameState.MainScreen);
+            if (_ConfirmationClip != null)
+            {
+                _AudioSource.PlayOneShot (_ConfirmationClip);
+                Invoke ("Close", _ConfirmationClip.length);
+            }
         }
     }
 
-    private void ResetKeypad ()
+    private void Close ()
     {
-        ClearCombination ();
-        _CombinationLabel.text = _ErrorText;
-        //TODO: Play sound that combination failed.
+        this.gameObject.SetActive (false);
+        Signals.ChangeGameState (GameState.MainScreen);
+    }
+
+    private void ClearCombination ()
+    {
+        _Combination = "";
+        _CombinationLabel.text = "";
     }
 }

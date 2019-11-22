@@ -10,10 +10,10 @@ public class Collectable : MonoBehaviour
 {
     [Tooltip ("The item the player will collect from this object.")]
     [SerializeField] private Item _Item = new Item ();
-    [Tooltip ("The audio clip to play upon being collected by the player.")]
-    [SerializeField] private AudioClip _CollectedClip = null;
     [Tooltip ("The message to play when collecting the item.")]
     [SerializeField] private TextAsset _CollectedMessage = null;
+    [Tooltip ("The various audio clips that the container can play.")]
+    [SerializeField] protected SFXClips _SFXClips = new SFXClips ();
 
     private AudioSource _AudioSource = null;
 
@@ -24,8 +24,7 @@ public class Collectable : MonoBehaviour
         GetComponent<Collider2D> ().enabled = false;
         GetComponent<SpriteRenderer> ().enabled = false;
 
-        if (_CollectedClip != null)
-            _AudioSource.PlayOneShot (_CollectedClip);
+        _SFXClips.PlayClip (ClipTypes.Collected);
 
         Signals.PumpMessage (_CollectedMessage);
 
@@ -37,6 +36,8 @@ public class Collectable : MonoBehaviour
         _Item.Constructor ();
         _AudioSource = GetComponent<AudioSource> ();
         GetComponent<Collider2D> ().isTrigger = true;
+
+        _SFXClips.Constructor (_AudioSource);
     }
 
     private void OnMouseDown ()

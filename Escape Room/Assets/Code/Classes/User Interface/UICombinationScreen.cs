@@ -40,7 +40,7 @@ class UICombinationScreen : MonoBehaviour
 
         ClearCombination ();
         _LockedObject = lockedObject;
-        _CombinationLabel.text = "Enter Code";
+        _CombinationLabel.text = _StartText;
         _MaxCombinationLength = correctCombination.Length;
     }
 
@@ -76,6 +76,8 @@ class UICombinationScreen : MonoBehaviour
 
     public void EnterCombination ()
     {
+        print (_Combination);
+
         if (_LockedObject.Unlock (_Combination) == false)
         {
             ResetKeypad ();
@@ -94,7 +96,7 @@ class UICombinationScreen : MonoBehaviour
     private void Close ()
     {
         this.gameObject.SetActive (false);
-        Signals.ChangeGameState (GameState.MainScreen);
+        Signals.ChangeGameState (GameState.Subroom);
     }
 
     private void ClearCombination ()

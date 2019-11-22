@@ -210,5 +210,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentState: 0
-  Inventory:
-    Items: []
+  _Inventory:
+    _InventorySize: 25
+    _Items: []
+  _StartMessage: {fileID: 4900000, guid: d87833be8999a854a8134e8156385361, type: 3}
+  _EndingMessage: {fileID: 4900000, guid: 2272120832739ad47baac488c900b420, type: 3}

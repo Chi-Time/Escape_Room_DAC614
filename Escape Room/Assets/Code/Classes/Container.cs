@@ -8,10 +8,10 @@ using UnityEngine;
 [RequireComponent (typeof (Collider2D), typeof (AudioSource))]
 public class Container : MonoBehaviour
 {
-    [Tooltip ("The clip to play when opening the object.")]
-    [SerializeField] protected AudioClip _OpenClip = null;
     [Tooltip ("The view to display with the contents of the container.")]
     [SerializeField] protected GameObject _ContainerContents = null;
+    [Tooltip ("The various audio clips that the container can play.")]
+    [SerializeField] protected SFXClips _SFXClips = new SFXClips ();
 
     protected AudioSource _AudioSource = null;
     protected SpriteRenderer _SpriteRenderer = null;
@@ -20,10 +20,11 @@ public class Container : MonoBehaviour
     {
         _AudioSource = GetComponent<AudioSource> ();
         _SpriteRenderer = GetComponent<SpriteRenderer> ();
+        _SFXClips.Constructor (_AudioSource);
 
         if (_ContainerContents != null)
         {
-            _ContainerContents = Instantiate (_ContainerContents, new Vector3 (0, 0, -1f), Quaternion.identity);
+            _ContainerContents = Instantiate (_ContainerContents);
             _ContainerContents.SetActive (false);
         }
     }
@@ -33,12 +34,15 @@ public class Container : MonoBehaviour
         if (_ContainerContents != null)
         {
             var containerHolder = GameObject.Find ("Containers Holder");
-            _ContainerContents.transform.SetParent (containerHolder.transform);
+            _ContainerContents.transform.SetParent (containerHolder.transform, false);
         }
     }
 
     protected virtual void OnMouseDown ()
     {
+        if (GameManager.CurrentState != GameState.Subroom)
+            return;
+
         Clicked ();
     }
 
@@ -46,8 +50,7 @@ public class Container : MonoBehaviour
     {
         if (_ContainerContents != null)
         {
-            if (_OpenClip != null)
-                _AudioSource.PlayOneShot (_OpenClip);
+            _SFXClips.PlayClip (ClipTypes.Opened);
 
             _ContainerContents.SetActive (true);
             Signals.ChangeGameState (GameState.Container);

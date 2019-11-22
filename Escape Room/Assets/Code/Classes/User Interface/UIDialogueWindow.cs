@@ -13,16 +13,23 @@ class UIDialogueWindow : MonoBehaviour
     [Tooltip ("The text to use for all dialogue in the game.")]
     [SerializeField] private Text _DialogueLabel = null;
 
+    private bool _Printing = false;
+
     private void Awake ()
     {
         Signals.OnMessagePumped += OnMessagePumped;
         this.gameObject.SetActive (false);
     }
 
+    private void OnEnable ()
+    {
+        _Printing = false;
+    }
+
     public void OnMessagePumped (TextAsset message)
     {
         // Check to see if there is a message to print first. If not, just exit.
-        if (message == null)
+        if (message == null || _Printing)
             return;
 
         this.gameObject.SetActive (true);
@@ -31,11 +38,15 @@ class UIDialogueWindow : MonoBehaviour
 
     private IEnumerator DisplayMessage (string message)
     {
+        _Printing = true;
+
         foreach (char character in message)
         {
             _DialogueLabel.text += character;
             yield return new WaitForSeconds (_PrintSpeed);
         }
+
+        _Printing = false;
     }
 
     private void OnDestroy ()
@@ -50,6 +61,7 @@ class UIDialogueWindow : MonoBehaviour
 
     private void OnDisable ()
     {
+        _Printing = false;
         StopAllCoroutines ();
         _DialogueLabel.text = "";
     }

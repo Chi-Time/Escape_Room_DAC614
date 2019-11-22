@@ -9,5 +9,6 @@ public enum GameState
     MainScreen,
     Container,
     Combination,
-    Paused
+    Paused,
+    Subroom
 }

@@ -12,10 +12,6 @@ class LockedContainerCode : Container, ICodeLockable
 
     [Tooltip ("The sprite to switch to when the container has been unlocked.\nIf no sprite is provided then the image won't change.")]
     [SerializeField] private Sprite _UnlockedSprite = null;
-    [Tooltip ("The clip to play when interacting with the locked object.")]
-    [SerializeField] private AudioClip _LockedClip = null;
-    [Tooltip ("The clip to play when unlocking the object.")]
-    [SerializeField] private AudioClip _UnlockedClip = null;
     [Tooltip ("The message to print when the object is locked.\nIf no message is provided it won't say anything.")]
     [SerializeField] private TextAsset _LockedMessage = null;
     [Tooltip ("The message to print when the object is unlocked.\nIf no message is provided it won't say anything.")]
@@ -52,12 +48,17 @@ class LockedContainerCode : Container, ICodeLockable
 
     protected override void OnMouseDown ()
     {
+        if (GameManager.CurrentState != GameState.Subroom)
+            return;
+
         if (IsUnlocked)
         {
             Clicked ();
         }
         else
         {
+            //DisplayLocked ();
+
             if (_CombinationUI != null)
             {
                 _CombinationUI.DisplayKeypad (_RequiredCombination, this);
@@ -78,17 +79,15 @@ class LockedContainerCode : Container, ICodeLockable
             return true;
         }
 
-        DisplayLocked ();
-
         return false;
     }
 
     private void DisplayUnlocked ()
     {
-        Signals.PumpMessage (_UnlockedMessage);
+        Signals.Unlock (this);
+        //Signals.PumpMessage (_UnlockedMessage);
 
-        if (_UnlockedClip != null)
-            _AudioSource.PlayOneShot (_UnlockedClip);
+        _SFXClips.PlayClip (ClipTypes.Unlocked);
 
         if (_UnlockedSprite != null)
             _SpriteRenderer.sprite = _UnlockedSprite;
@@ -96,9 +95,8 @@ class LockedContainerCode : Container, ICodeLockable
 
     private void DisplayLocked ()
     {
-        Signals.PumpMessage (_LockedMessage);
+        //Signals.PumpMessage (_LockedMessage);
 
-        if (_LockedClip != null)
-            _AudioSource.PlayOneShot (_LockedClip);
+        _SFXClips.PlayClip (ClipTypes.Locked);
     }
 }

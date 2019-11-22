@@ -124,7 +124,7 @@ public class Item
     public string Name { get { return _Name; } }
     public int ID { get { return _ID; } }
     public int UID { get { return _UID; } }
-    public string Description { get { return _Description; } }
+    public TextAsset Description { get { return _Description; } }
     public GameObject ItemPrefab { get { return _ItemPrefab; } }
 
     [Tooltip ("The name of the current item.")]
@@ -134,7 +134,7 @@ public class Item
     [Tooltip ("The Unique ID of the current item.")]
     [SerializeField] private int _UID = 0;
     [Tooltip ("The description of the object when viewed.")]
-    [SerializeField] private string _Description = "";
+    [SerializeField] private TextAsset _Description = null;
     [Tooltip ("The physical prefab of the item.")]
     [SerializeField] private GameObject _ItemPrefab = null;
 
@@ -151,4 +151,20 @@ public class Item
 
         return false;
     }
+
+    //public static bool operator == (Item a, Item b)
+    //{
+    //    if (a.UID == b.UID)
+    //        return true;
+
+    //    return false;
+    //}
+
+    //public static bool operator != (Item a, Item b)
+    //{
+    //    if (a.UID == b.UID)
+    //        return false;
+
+    //    return true;
+    //}
 }

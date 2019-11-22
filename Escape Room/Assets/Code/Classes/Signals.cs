@@ -16,6 +16,9 @@ static class Signals
     public static event Action<IRequirable> OnItemRequired;
     public static void Require (IRequirable requirer) { OnItemRequired?.Invoke (requirer); }
 
+    public static event Action<Container> OnContainerUnlocked;
+    public static void Unlock (Container container) { OnContainerUnlocked?.Invoke (container); } 
+
     public static event Action<GameState> OnGameStateChanged;
     public static void ChangeGameState (GameState newState) { OnGameStateChanged?.Invoke (newState); }
 }
